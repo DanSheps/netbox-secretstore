@@ -15,6 +15,7 @@ from django.utils.encoding import force_bytes
 
 from dcim.models import Device
 from virtualization.models import VirtualMachine
+from circuits.models import Circuit
 from extras.utils import extras_features
 from netbox.models import BigIDModel, OrganizationalModel, PrimaryModel
 from utilities.querysets import RestrictedQuerySet
@@ -439,3 +440,10 @@ GenericRelation(
     object_id_field='assigned_object_id',
     related_query_name='virtual_machine'
 ).contribute_to_class(VirtualMachine, 'secrets')
+
+GenericRelation(
+    to=Secret,
+    content_type_field='assigned_object_type',
+    object_id_field='assigned_object_id',
+    related_query_name='circuit'
+).contribute_to_class(Circuit, 'secrets')
