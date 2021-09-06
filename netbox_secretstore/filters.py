@@ -2,6 +2,7 @@ import django_filters
 from django.db.models import Q
 
 from dcim.models import Device
+from circuits.models import Circuit
 from extras.filters import TagFilter
 from extras.filtersets import CustomFieldFilterSet
 from netbox.filtersets import ChangeLoggedModelFilterSet, BaseFilterSet
@@ -58,6 +59,17 @@ class SecretFilterSet(BaseFilterSet):
         field_name='virtual_machine',
         queryset=VirtualMachine.objects.all(),
         label='Virtual machine (ID)',
+    )
+    circuit = django_filters.ModelMultipleChoiceFilter(
+        field_name='cid',
+        queryset=Circuit.objects.all(),
+        to_field_name='name',
+        label='Circuit (name)',
+    )
+    circuit_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='circuit',
+        queryset=Circuit.objects.all(),
+        label='Circuit (ID)',
     )
     tag = TagFilter()
 

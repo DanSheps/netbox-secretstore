@@ -13,6 +13,7 @@ from utilities.forms import (
     DynamicModelMultipleChoiceField,
 )
 from virtualization.models import VirtualMachine
+from cirtuits.models import Circuit
 from netbox_secretstore.constants import *
 from netbox_secretstore.models import Secret, SecretRole, UserKey
 
@@ -88,6 +89,10 @@ class SecretForm(BootstrapMixin, CustomFieldModelForm):
         queryset=VirtualMachine.objects.all(),
         required=False
     )
+    circuit = DynamicModelChoiceField(
+        queryset=Circuit.objects.all(),
+        required=False
+    )
     plaintext = forms.CharField(
         max_length=SECRET_PLAINTEXT_MAX_LENGTH,
         required=False,
@@ -115,7 +120,7 @@ class SecretForm(BootstrapMixin, CustomFieldModelForm):
     class Meta:
         model = Secret
         fields = [
-            'device', 'virtual_machine', 'role', 'name', 'plaintext', 'plaintext2', 'tags',
+            'device', 'virtual_machine', 'circuit', 'role', 'name', 'plaintext', 'plaintext2', 'tags',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -128,6 +133,8 @@ class SecretForm(BootstrapMixin, CustomFieldModelForm):
                 initial['device'] = instance.assigned_object
             elif type(instance.assigned_object) is VirtualMachine:
                 initial['virtual_machine'] = instance.assigned_object
+            elif type(instance.assigned_object) is Circuit:
+                initial['circuit'] = instance.assigned_object
         kwargs['initial'] = initial
 
         super().__init__(*args, **kwargs)
@@ -139,11 +146,18 @@ class SecretForm(BootstrapMixin, CustomFieldModelForm):
     def clean(self):
         super().clean()
 
-        if not self.cleaned_data['device'] and not self.cleaned_data['virtual_machine']:
-            raise forms.ValidationError("Secrets must be assigned to a device or virtual machine.")
+        if not self.cleaned_data['device'] and not self.cleaned_data['virtual_machine'] and not self.cleaned_data['circuit']:
+            raise forms.ValidationError("Secrets must be assigned to a device, virtual machine or circuit.")
 
         if self.cleaned_data['device'] and self.cleaned_data['virtual_machine']:
             raise forms.ValidationError("Cannot select both a device and virtual machine for secret assignment.")
+
+        if self.cleaned_data['device'] and self.cleaned_data['circuit']:
+            raise forms.ValidationError("Cannot select both a device and a circuit for secret assignment.")
+
+        if self.cleaned_data['circuit'] and self.cleaned_data['virtual_machine']:
+            raise forms.ValidationError("Cannot select both a circuit and virtual machine for secret assignment.")
+
 
         # Verify that the provided plaintext values match
         if self.cleaned_data['plaintext'] != self.cleaned_data['plaintext2']:
@@ -153,7 +167,7 @@ class SecretForm(BootstrapMixin, CustomFieldModelForm):
 
     def save(self, *args, **kwargs):
         # Set assigned object
-        self.instance.assigned_object = self.cleaned_data.get('device') or self.cleaned_data.get('virtual_machine')
+        self.instance.assigned_object = self.cleaned_data.get('device') or self.cleaned_data.get('virtual_machine') or self.cleaned_data.get('circuit')
 
         return super().save(*args, **kwargs)
 
@@ -176,6 +190,12 @@ class SecretCSVForm(CustomFieldModelCSVForm):
         to_field_name='name',
         help_text='Assigned VM'
     )
+    circuit = CSVModelChoiceField(
+        queryset=Circuit.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text='Assigned circuit'
+    )
     plaintext = forms.CharField(
         help_text='Plaintext secret data'
     )
@@ -192,17 +212,22 @@ class SecretCSVForm(CustomFieldModelCSVForm):
 
         device = self.cleaned_data.get('device')
         virtual_machine = self.cleaned_data.get('virtual_machine')
+        circuit = self.cleaned_data.get('circuit')
 
         # Validate device OR VM is assigned
         if not device and not virtual_machine:
             raise forms.ValidationError("Secret must be assigned to a device or a virtual machine")
         if device and virtual_machine:
             raise forms.ValidationError("Secret cannot be assigned to both a device and a virtual machine")
+        if device and circuit:
+            raise forms.ValidationError("Secret cannot be assigned to both a device and a circuit")
+        if circuit and virtual_machine:
+            raise forms.ValidationError("Secret cannot be assigned to both a circuit and a virtual machine")
 
     def save(self, *args, **kwargs):
 
         # Set device/VM assignment
-        self.instance.assigned_object = self.cleaned_data['device'] or self.cleaned_data['virtual_machine']
+        self.instance.assigned_object = self.cleaned_data['device'] or self.cleaned_data['virtual_machine'] or self.cleaned_data['circuit']
 
         s = super().save(*args, **kwargs)
 

@@ -10,13 +10,19 @@ class Secrets(PluginTemplateExtension):
             'secrets': Secret.objects.filter(device=obj),
         })
 
-
 class DeviceSecrets(Secrets):
-    model = 'dcim.Device'
-
+    model = 'dcim.device'
 
 class VMSecrets(Secrets):
-    model = 'virtualization.VirtualMachine'
+    model = 'virtualization.virtualMachine'
 
+class CircuitSecrets(PluginTemplateExtension):
+    model = 'circuits.circuit'
 
-template_extensions = [DeviceSecrets, VMSecrets]
+    def right_page(self):
+        obj = self.context['object']
+        return self.render('netbox_secretstore/inc/circuit_secrets.html', extra_context={
+            'secrets': Secret.objects.filter(circuit=obj),
+        })
+
+template_extensions = [DeviceSecrets, VMSecrets, CircuitSecrets]
