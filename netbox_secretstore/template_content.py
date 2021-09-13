@@ -1,8 +1,8 @@
 from extras.plugins import PluginTemplateExtension
 from .models import Secret
 
-class DeviceSecrets(PluginTemplateExtension):
-    model = 'dcim.device'
+
+class Secrets(PluginTemplateExtension):
 
     def right_page(self):
         obj = self.context['object']
@@ -19,4 +19,10 @@ class CircuitSecrets(PluginTemplateExtension):
             'secrets': Secret.objects.filter(circuit=obj),
         })
 
-template_extensions = [DeviceSecrets, CircuitSecrets]
+class DeviceSecrets(Secrets):
+    model = 'dcim.Device'
+
+class VMSecrets(Secrets):
+    model = 'virtualization.VirtualMachine'
+
+template_extensions = [DeviceSecrets, VMSecrets]
