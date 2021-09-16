@@ -7,6 +7,7 @@ recursive-include netbox_secretstore/forms *
 recursive-include netbox_secretstore/project-static *
 recursive-include netbox_secretstore/migrations *
 recursive-include netbox_secretstore/api *
+recursive-include netbox_secretstore/utils *
 
 
 
