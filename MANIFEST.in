@@ -2,3 +2,12 @@ include README.md
 include LICENSE
 recursive-include netbox_secretstore/templates *
 recursive-include netbox_secretstore/static *
+recursive-include netbox_secretstore/models *
+recursive-include netbox_secretstore/forms *
+recursive-include netbox_secretstore/project-static *
+recursive-include netbox_secretstore/migrations *
+recursive-include netbox_secretstore/api *
+
+
+
+
