@@ -13,7 +13,7 @@ from utilities.forms import (
     DynamicModelMultipleChoiceField,
 )
 from virtualization.models import VirtualMachine
-from cirtuits.models import Circuit
+from circuits.models import Circuit
 from netbox_secretstore.constants import *
 from netbox_secretstore.models import Secret, SecretRole, UserKey
 
