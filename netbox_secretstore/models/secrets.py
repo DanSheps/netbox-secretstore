@@ -256,7 +256,8 @@ class SecretRole(OrganizationalModel):
     )
     access_type = models.CharField(
         max_length=32,
-        choices=SecretsAccessTypeChoices
+        choices=SecretsAccessTypeChoices,
+        default=SecretsAccessTypeChoices.TYPE_GENERIC
     )
 
     objects = RestrictedQuerySet.as_manager()
@@ -312,7 +313,8 @@ class Secret(PrimaryModel):
     )
     secret_type = models.CharField(
         max_length=32,
-        choices=SecretsTypeChoices
+        choices=SecretsTypeChoices,
+        default=SecretsTypeChoices.TYPE_PASSWORD
     )
     ciphertext = models.BinaryField(
         max_length=65568,  # 128-bit IV + 16-bit pad length + 65535B secret + 15B padding
