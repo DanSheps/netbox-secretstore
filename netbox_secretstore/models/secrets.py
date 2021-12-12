@@ -22,6 +22,7 @@ from netbox_secretstore.exceptions import InvalidKey
 from netbox_secretstore.hashers import SecretValidationHasher
 from netbox_secretstore.querysets import UserKeyQuerySet
 from netbox_secretstore.utils import encrypt_master_key, decrypt_master_key, generate_random_key
+from netbox_secretstore.choices import SecretsAccessTypeChoices, SecretsTypeChoices
 
 
 __all__ = (
@@ -253,10 +254,14 @@ class SecretRole(OrganizationalModel):
         max_length=200,
         blank=True,
     )
+    access_type = models.CharField(
+        max_length=32,
+        choices=SecretsAccessTypeChoices
+    )
 
     objects = RestrictedQuerySet.as_manager()
 
-    csv_headers = ['name', 'slug', 'description']
+    csv_headers = ['name', 'slug', 'description', 'access_type']
 
     class Meta:
         ordering = ['name']
@@ -272,6 +277,7 @@ class SecretRole(OrganizationalModel):
             self.name,
             self.slug,
             self.description,
+            self.access_type
         )
 
 
@@ -304,6 +310,10 @@ class Secret(PrimaryModel):
         max_length=100,
         blank=True
     )
+    secret_type = models.CharField(
+        max_length=32,
+        choices=SecretsTypeChoices
+    )
     ciphertext = models.BinaryField(
         max_length=65568,  # 128-bit IV + 16-bit pad length + 65535B secret + 15B padding
         editable=False
@@ -316,7 +326,7 @@ class Secret(PrimaryModel):
     objects = RestrictedQuerySet.as_manager()
 
     plaintext = None
-    csv_headers = ['assigned_object_type', 'assigned_object_id', 'role', 'name', 'plaintext']
+    csv_headers = ['assigned_object_type', 'assigned_object_id', 'role', 'name', 'secret_type', 'plaintext']
 
     class Meta:
         ordering = ('role', 'name', 'pk')
@@ -339,6 +349,7 @@ class Secret(PrimaryModel):
             self.role,
             self.name,
             self.plaintext or '',
+            self.secret_type
         )
 
     def _pad(self, s):

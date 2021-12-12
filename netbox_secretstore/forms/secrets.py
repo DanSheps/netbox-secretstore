@@ -50,7 +50,7 @@ class SecretRoleForm(CustomFieldModelForm):
 
     class Meta:
         model = SecretRole
-        fields = ('name', 'slug', 'description')
+        fields = ('name', 'slug', 'description', 'access_type')
 
 
 class SecretRoleCSVForm(CustomFieldModelCSVForm):
@@ -115,7 +115,7 @@ class SecretForm(CustomFieldModelForm):
     class Meta:
         model = Secret
         fields = [
-            'device', 'virtual_machine', 'role', 'name', 'plaintext', 'plaintext2', 'tags',
+            'device', 'virtual_machine', 'role', 'name', 'plaintext', 'plaintext2', 'tags', 'secret_type'
         ]
 
     def __init__(self, *args, **kwargs):
@@ -182,10 +182,7 @@ class SecretCSVForm(CustomFieldModelCSVForm):
 
     class Meta:
         model = Secret
-        fields = ['role', 'name', 'plaintext', 'device', 'virtual_machine']
-        help_texts = {
-            'name': 'Name or username',
-        }
+        fields = ['role', 'name', 'plaintext', 'device', 'virtual_machine', 'secret_type']
 
     def clean(self):
         super().clean()

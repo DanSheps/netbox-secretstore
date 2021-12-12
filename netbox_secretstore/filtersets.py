@@ -19,7 +19,7 @@ class SecretRoleFilterSet(ChangeLoggedModelFilterSet):
 
     class Meta:
         model = SecretRole
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'access_type']
 
 
 class SecretFilterSet(BaseFilterSet):
@@ -63,7 +63,7 @@ class SecretFilterSet(BaseFilterSet):
 
     class Meta:
         model = Secret
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'secret_type']
 
     def search(self, queryset, name, value):
         if not value.strip():
