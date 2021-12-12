@@ -6,7 +6,7 @@ from rest_framework import serializers
 from netbox.api import ContentTypeField
 from netbox.api.serializers import PrimaryModelSerializer
 from netbox_secretstore.constants import SECRET_ASSIGNMENT_MODELS
-from netbox_secretstore.models import Secret, SecretRole
+from netbox_secretstore.models import Secret, SecretRole, SecretsGroup
 from utilities.api import get_serializer_for_model
 from .nested_serializers import *
 
@@ -62,3 +62,12 @@ class SecretSerializer(PrimaryModelSerializer):
         super().validate(data)
 
         return data
+
+class SecretsGroupSerializer(PluginOrganizationalModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='plugins-api:netbox_secretstore-api:secretsgroup-detail')
+
+    class Meta:
+        model = SecretsGroup
+        fields = [
+            'id', 'url', 'display', 'name', 'slug', 'description', 'custom_fields', 'created', 'last_updated'
+        ]

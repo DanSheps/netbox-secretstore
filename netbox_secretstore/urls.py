@@ -1,8 +1,7 @@
 from django.urls import path
-
 from extras.views import ObjectChangeLogView, ObjectJournalView
+
 from .views import *
-from .models import Secret, SecretRole
 
 urlpatterns = [
 
@@ -26,8 +25,19 @@ urlpatterns = [
     path('secrets/<int:pk>/', SecretView.as_view(), name='secret'),
     path('secrets/<int:pk>/edit/', SecretEditView.as_view(), name='secret_edit'),
     path('secrets/<int:pk>/delete/', SecretDeleteView.as_view(), name='secret_delete'),
-    path('secrets/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='secret_changelog', kwargs={'model': Secret}),
+    path('secrets/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='secret_changelog', kwargs={
+        'model': Secret}),
     path('secrets/<int:pk>/journal/', ObjectJournalView.as_view(), name='secret_journal', kwargs={'model': Secret}),
+
+    # Secrets group
+    path('secrets-group/', SecretsGroupListView.as_view(), name='secretsgroup_list'),
+    path('secrets-group/add/', SecretsGroupEditView.as_view(), name='secretsgroup_add'),
+    path('secrets-group/import/', SecretsGroupBulkImportView.as_view(), name='secretsgroup_import'),
+    path('secrets-group/edit/', SecretsGroupBulkEditView.as_view(), name='secretsgroup_bulk_edit'),
+    path('secrets-group/delete/', SecretsGroupBulkDeleteView.as_view(), name='secretsgroup_bulk_delete'),
+    path('secrets-group/<int:pk>/', SecretsGroupView.as_view(), name='secretsgroup'),
+    path('secrets-group/<int:pk>/edit/', SecretsGroupEditView.as_view(), name='secretsgroup_edit'),
+    path('secrets-group/<int:pk>/delete/', SecretsGroupDeleteView.as_view(), name='secretsgroup_delete'),
 
     # User
     path('user-key/', UserKeyView.as_view(), name='userkey'),

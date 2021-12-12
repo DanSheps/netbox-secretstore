@@ -8,6 +8,7 @@ router.APIRootView = views.SecretsRootView
 # Secrets
 router.register('secret-roles', views.SecretRoleViewSet)
 router.register('secrets', views.SecretViewSet)
+router.register('secretsgroup', views.SecretsGroupViewSet)
 
 # Miscellaneous
 router.register('get-session-key', views.GetSessionKeyViewSet, basename='get-session-key')

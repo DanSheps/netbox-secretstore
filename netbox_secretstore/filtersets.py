@@ -1,22 +1,27 @@
 import django_filters
-from django.db.models import Q
-
 from dcim.models import Device
+from django.db.models import Q
 from extras.filters import TagFilter
-from extras.filtersets import CustomFieldFilterSet
-from netbox.filtersets import ChangeLoggedModelFilterSet, BaseFilterSet
+from netbox.filtersets import BaseFilterSet, ChangeLoggedModelFilterSet
 from virtualization.models import VirtualMachine
-from .models import Secret, SecretRole
+
+from .models import Secret, SecretRole, SecretsGroup
 
 
 __all__ = (
     'SecretFilterSet',
     'SecretRoleFilterSet',
+    'SecretsGroupFilterSet'
 )
 
 
-class SecretRoleFilterSet(ChangeLoggedModelFilterSet):
+class SecretsGroupFilterSet(ChangeLoggedModelFilterSet):
+    class Meta:
+        model = SecretsGroup
+        fields = ['id', 'name', 'slug']
 
+
+class SecretRoleFilterSet(ChangeLoggedModelFilterSet):
     class Meta:
         model = SecretRole
         fields = ['id', 'name', 'slug', 'access_type']

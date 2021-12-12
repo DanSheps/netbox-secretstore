@@ -2,7 +2,7 @@ import django_tables2 as tables
 
 from utilities.tables import BaseTable, LinkedCountColumn, TagColumn, ToggleColumn
 from netbox_secretstore.utils.tables import PluginButtonsColumn
-from .models import SecretRole, Secret
+from .models import SecretRole, Secret, SecretsGroup
 
 
 #
@@ -51,3 +51,20 @@ class SecretTable(BaseTable):
         model = Secret
         fields = ('pk', 'id', 'assigned_object', 'role', 'name', 'last_updated', 'hash', 'tags')
         default_columns = ('pk', 'id', 'assigned_object', 'role', 'name', 'last_updated')
+
+
+#
+# Secrets Group
+#
+
+class SecretsGroupTable(BaseTable):
+    pk = ToggleColumn()
+    id = tables.Column(  # Provides a link to the secret
+        linkify=True
+    )
+    actions = PluginButtonsColumn(SecretsGroup)
+
+    class Meta(BaseTable.Meta):
+        model = SecretsGroup
+        fields = ('pk', 'id', 'name', 'slug', 'description', 'secrets')
+        default_columns = ('pk', 'id', 'name', 'description')

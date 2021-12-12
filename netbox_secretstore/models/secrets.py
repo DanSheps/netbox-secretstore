@@ -3,8 +3,9 @@ import os
 from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Util import strxor
+from dcim.models import Device
 from django.conf import settings
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -12,22 +13,22 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.encoding import force_bytes
-
-from dcim.models import Device
-from virtualization.models import VirtualMachine
 from extras.utils import extras_features
 from netbox.models import BigIDModel, OrganizationalModel, PrimaryModel
 from utilities.querysets import RestrictedQuerySet
+from virtualization.models import VirtualMachine
+
+from netbox_secretstore.choices import SecretsAccessTypeChoices, SecretsTypeChoices
 from netbox_secretstore.exceptions import InvalidKey
 from netbox_secretstore.hashers import SecretValidationHasher
 from netbox_secretstore.querysets import UserKeyQuerySet
-from netbox_secretstore.utils import encrypt_master_key, decrypt_master_key, generate_random_key
-from netbox_secretstore.choices import SecretsAccessTypeChoices, SecretsTypeChoices
+from netbox_secretstore.utils import decrypt_master_key, encrypt_master_key, generate_random_key
 
 
 __all__ = (
     'Secret',
     'SecretRole',
+    'SecretsGroup',
     'SessionKey',
     'UserKey',
 )
@@ -438,6 +439,39 @@ class Secret(PrimaryModel):
             raise Exception("Hash has not been generated for this secret.")
         return check_password(plaintext, self.hash, preferred=SecretValidationHasher())
 
+
+@extras_features('custom_fields', 'custom_links', 'export_templates', 'webhooks')
+class SecretsGroup(OrganizationalModel):
+    """A group of related Secrets."""
+
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+    slug = models.SlugField(
+        max_length=100,
+        unique=True
+    )
+    description = models.CharField(
+        max_length=200,
+        blank=True
+    )
+    secrets = models.ManyToManyField(
+        to=Secret,
+        related_name="groups",
+        blank=True
+    )
+
+    csv_headers = ["name", "slug", "description"]
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_secretstore:secretsgroup', args=[self.pk])
+
+    def to_csv(self):
+        return self.name, self.slug, self.description
 
 GenericRelation(
     to=Secret,

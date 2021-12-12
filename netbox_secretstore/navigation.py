@@ -21,6 +21,24 @@ menu_items = (
         ),
     ),
     PluginMenuItem(
+        link_text="Secrets Group",
+        link="plugins:netbox_secretstore:secretsgroup_list",
+        buttons=(
+            PluginMenuButton(
+                link="plugins:netbox_secretstore:secretsgroup_add",
+                title="Add Secrets Group",
+                icon_class="mdi mdi-plus-thick",
+                color="success",
+            ),
+            PluginMenuButton(
+                link="plugins:netbox_secretstore:secretsgroup_import",
+                title="Import Secrets Group",
+                icon_class="mdi mdi-upload",
+                color="info",
+            ),
+        ),
+    ),
+    PluginMenuItem(
         link_text="Secrets",
         link="plugins:netbox_secretstore:secret_list",
         buttons=(

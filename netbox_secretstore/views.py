@@ -3,24 +3,23 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.generic.base import View
-
-from netbox_plugin_extensions.views.generic import PluginObjectListView, PluginObjectView, PluginObjectEditView, \
-    PluginObjectDeleteView
-from netbox_secretstore.forms import UserKeyForm
-
 from netbox.views import generic
+from netbox_plugin_extensions.views.generic import PluginObjectDeleteView, PluginObjectEditView, PluginObjectListView, \
+    PluginObjectView
 from utilities.forms import ConfirmationForm
 from utilities.tables import paginate_table
 from utilities.utils import count_related
-from .tables import *
-from .forms import *
+
 from .filtersets import *
-from .models import SecretRole, Secret, SessionKey, UserKey
+from .forms import *
+from .forms import SecretsGroupBulkEditForm, SecretsGroupCSVForm, SecretsGroupForm
+from .models import SessionKey, UserKey
+from .tables import *
 
 
 def get_session_key(request):
@@ -32,6 +31,43 @@ def get_session_key(request):
         return base64.b64decode(session_key)
     return session_key
 
+
+#
+# Secrets group
+#
+
+class SecretsGroupListView(PluginObjectListView):
+    queryset = SecretsGroup.objects.all()
+    table = SecretsGroupTable
+
+
+class SecretsGroupEditView(PluginObjectEditView):
+    queryset = SecretsGroup.objects.all()
+    model_form = SecretsGroupForm
+
+class SecretsGroupDeleteView(PluginObjectDeleteView):
+    queryset = SecretsGroup.objects.all()
+
+
+class SecretsGroupBulkImportView(generic.BulkImportView):
+    queryset = SecretsGroup.objects.all()
+    model_form = SecretsGroupCSVForm
+    table = SecretsGroupTable
+
+
+class SecretsGroupBulkEditView(generic.BulkEditView):
+    queryset = SecretsGroup.objects.all()
+    filterset = SecretsGroupFilterSet
+    table = SecretsGroupTable
+    form = SecretsGroupBulkEditForm
+
+
+class SecretsGroupBulkDeleteView(generic.BulkDeleteView):
+    queryset = SecretsGroup.objects.all()
+    table = SecretsGroupTable
+
+class SecretsGroupView(PluginObjectView):
+    queryset = SecretsGroup.objects.all()
 
 #
 # Secret roles

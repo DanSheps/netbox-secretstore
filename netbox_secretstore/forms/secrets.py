@@ -1,21 +1,17 @@
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
+from dcim.models import Device
 from django import forms
 from django.utils.translation import gettext as _
-
-from dcim.models import Device
-from extras.forms import (
-    AddRemoveTagsForm, CustomFieldModelBulkEditForm, CustomFieldModelFilterForm, CustomFieldModelForm, CustomFieldModelCSVForm,
-)
+from extras.forms import (AddRemoveTagsForm, CustomFieldModelBulkEditForm, CustomFieldModelCSVForm,
+                          CustomFieldModelFilterForm, CustomFieldModelForm)
 from extras.models import Tag
-from utilities.forms import (
-    BootstrapMixin, CSVModelChoiceField, SlugField, TagFilterField, DynamicModelChoiceField,
-    DynamicModelMultipleChoiceField,
-)
+from utilities.forms import (CSVModelChoiceField, DynamicModelChoiceField, DynamicModelMultipleChoiceField, SlugField,
+                             TagFilterField)
 from virtualization.models import VirtualMachine
-from netbox_secretstore.constants import *
-from netbox_secretstore.models import Secret, SecretRole, UserKey
 
+from netbox_secretstore.constants import *
+from netbox_secretstore.models import Secret, SecretRole, SecretsGroup, UserKey
 from .fields import PluginDynamicModelChoiceField, PluginDynamicModelMultipleChoiceField
 
 
@@ -282,3 +278,37 @@ class ActivateUserKeyForm(forms.Form):
         ),
         label='Your private key'
     )
+
+
+#
+# Secrets group
+#
+
+class SecretsGroupForm(CustomFieldModelForm):
+    slug = SlugField()
+
+    class Meta:
+        model = SecretsGroup
+        fields = ('name', 'slug', 'description', 'secrets')
+
+
+class SecretsGroupCSVForm(CustomFieldModelCSVForm):
+    slug = SlugField()
+
+    class Meta:
+        model = SecretsGroup
+        fields = SecretsGroup.csv_headers
+
+
+class SecretsGroupBulkEditForm(CustomFieldModelBulkEditForm):
+    pk = forms.ModelMultipleChoiceField(
+        queryset=SecretsGroup.objects.all(),
+        widget=forms.MultipleHiddenInput
+    )
+    description = forms.CharField(
+        max_length=200,
+        required=False
+    )
+
+    class Meta:
+        nullable_fields = ['description']
