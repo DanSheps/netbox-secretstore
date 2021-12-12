@@ -7,6 +7,7 @@ class SecretsAccessTypeChoices(ChoiceSet):
     TYPE_GNMI = "gNMI"
     TYPE_HTTP = "HTTP(S)"
     TYPE_NETCONF = "NETCONF"
+    TYPE_RDP = "RDP"
     TYPE_REST = "REST"
     TYPE_RESTCONF = "RESTCONF"
     TYPE_SNMP = "SNMP"
@@ -18,6 +19,7 @@ class SecretsAccessTypeChoices(ChoiceSet):
         (TYPE_GNMI, "gNMI"),
         (TYPE_HTTP, "HTTP(S)"),
         (TYPE_NETCONF, "NETCONF"),
+        (TYPE_RDP, "RDP"),
         (TYPE_REST, "REST"),
         (TYPE_RESTCONF, "RESTCONF"),
         (TYPE_SNMP, "SNMP"),
