@@ -16,12 +16,18 @@ __all__ = (
 
 
 class SecretsGroupFilterSet(ChangeLoggedModelFilterSet):
+    role = django_filters.ModelMultipleChoiceFilter(
+        field_name='role__slug',
+        queryset=SecretRole.objects.all(),
+        to_field_name='slug',
+        label='Role (slug)',
+    )
     class Meta:
         model = SecretsGroup
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'role']
 
 
-class SecretRoleFilterSet(ChangeLoggedModelFilterSet):
+class SecretRoleFilterSet(BaseFilterSet):
     class Meta:
         model = SecretRole
         fields = ['id', 'name', 'slug', 'access_type']
@@ -31,16 +37,6 @@ class SecretFilterSet(BaseFilterSet):
     q = django_filters.CharFilter(
         method='search',
         label='Search',
-    )
-    role_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=SecretRole.objects.all(),
-        label='Role (ID)',
-    )
-    role = django_filters.ModelMultipleChoiceFilter(
-        field_name='role__slug',
-        queryset=SecretRole.objects.all(),
-        to_field_name='slug',
-        label='Role (slug)',
     )
     device = django_filters.ModelMultipleChoiceFilter(
         field_name='device__name',

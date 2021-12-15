@@ -289,7 +289,7 @@ class SecretsGroupForm(CustomFieldModelForm):
 
     class Meta:
         model = SecretsGroup
-        fields = ('name', 'slug', 'description', 'secrets')
+        fields = ('name', 'slug', 'description', 'role', 'secrets')
 
 
 class SecretsGroupCSVForm(CustomFieldModelCSVForm):

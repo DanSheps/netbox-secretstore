@@ -303,11 +303,6 @@ class Secret(PrimaryModel):
         ct_field='assigned_object_type',
         fk_field='assigned_object_id'
     )
-    role = models.ForeignKey(
-        to='SecretRole',
-        on_delete=models.PROTECT,
-        related_name='secrets'
-    )
     name = models.CharField(
         max_length=100,
         blank=True
@@ -329,11 +324,11 @@ class Secret(PrimaryModel):
     objects = RestrictedQuerySet.as_manager()
 
     plaintext = None
-    csv_headers = ['assigned_object_type', 'assigned_object_id', 'role', 'name', 'secret_type', 'plaintext']
+    csv_headers = ['assigned_object_type', 'assigned_object_id', 'name', 'secret_type', 'plaintext']
 
     class Meta:
-        ordering = ('role', 'name', 'pk')
-        unique_together = ('assigned_object_type', 'assigned_object_id', 'role', 'name')
+        ordering = ('name', 'pk')
+        unique_together = ('assigned_object_type', 'assigned_object_id', 'name')
 
     def __init__(self, *args, **kwargs):
         self.plaintext = kwargs.pop('plaintext', None)
@@ -349,7 +344,6 @@ class Secret(PrimaryModel):
         return (
             f'{self.assigned_object_type.app_label}.{self.assigned_object_type.model}',
             self.assigned_object_id,
-            self.role,
             self.name,
             self.plaintext or '',
             self.secret_type
@@ -456,13 +450,18 @@ class SecretsGroup(OrganizationalModel):
         max_length=200,
         blank=True
     )
+    role = models.ForeignKey(
+        to='SecretRole',
+        on_delete=models.PROTECT,
+        related_name='secrets'
+    )
     secrets = models.ManyToManyField(
         to=Secret,
         related_name="groups",
         blank=True
     )
 
-    csv_headers = ["name", "slug", "description"]
+    csv_headers = ["name", "slug", "role", "description"]
 
     def __str__(self):
         return self.name
@@ -471,7 +470,7 @@ class SecretsGroup(OrganizationalModel):
         return reverse('plugins:netbox_secretstore:secretsgroup', args=[self.pk])
 
     def to_csv(self):
-        return self.name, self.slug, self.description
+        return self.name, self.slug, self.description, self.role
 
 GenericRelation(
     to=Secret,

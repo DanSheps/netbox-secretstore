@@ -40,17 +40,14 @@ class SecretTable(BaseTable):
         linkify=True,
         verbose_name='Assigned object'
     )
-    role = tables.Column(
-        linkify=True
-    )
     tags = TagColumn(
         url_name='plugins:netbox_secretstore:secret_list'
     )
 
     class Meta(BaseTable.Meta):
         model = Secret
-        fields = ('pk', 'id', 'assigned_object', 'role', 'name', 'last_updated', 'hash', 'tags')
-        default_columns = ('pk', 'id', 'assigned_object', 'role', 'name', 'last_updated')
+        fields = ('pk', 'id', 'assigned_object', 'name', 'last_updated', 'hash', 'tags')
+        default_columns = ('pk', 'id', 'assigned_object', 'name', 'last_updated')
 
 
 #
@@ -62,9 +59,12 @@ class SecretsGroupTable(BaseTable):
     id = tables.Column(  # Provides a link to the secret
         linkify=True
     )
+    role = tables.Column(
+        linkify=True
+    )
     actions = PluginButtonsColumn(SecretsGroup)
 
     class Meta(BaseTable.Meta):
         model = SecretsGroup
-        fields = ('pk', 'id', 'name', 'slug', 'description', 'secrets')
-        default_columns = ('pk', 'id', 'name', 'description')
+        fields = ('pk', 'id', 'name', 'slug', 'role', 'description', 'secrets')
+        default_columns = ('pk', 'id', 'name', 'role', 'description')

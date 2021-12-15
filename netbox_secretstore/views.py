@@ -56,14 +56,14 @@ class SecretsGroupBulkImportView(generic.BulkImportView):
 
 
 class SecretsGroupBulkEditView(generic.BulkEditView):
-    queryset = SecretsGroup.objects.all()
+    queryset = SecretsGroup.objects.prefetch_related('role')
     filterset = SecretsGroupFilterSet
     table = SecretsGroupTable
     form = SecretsGroupBulkEditForm
 
 
 class SecretsGroupBulkDeleteView(generic.BulkDeleteView):
-    queryset = SecretsGroup.objects.all()
+    queryset = SecretsGroup.objects.prefetch_related('role')
     table = SecretsGroupTable
 
 class SecretsGroupView(PluginObjectView):
@@ -74,9 +74,7 @@ class SecretsGroupView(PluginObjectView):
 #
 
 class SecretRoleListView(PluginObjectListView):
-    queryset = SecretRole.objects.annotate(
-        secret_count=count_related(Secret, 'role')
-    )
+    queryset = SecretRole.objects.all()
     table = SecretRoleTable
 
 
@@ -84,16 +82,13 @@ class SecretRoleView(PluginObjectView):
     queryset = SecretRole.objects.all()
 
     def get_extra_context(self, request, instance):
-        secrets = Secret.objects.restrict(request.user, 'view').filter(
-            role=instance
-        )
+        secrets_group = SecretsGroup.objects.restrict(request.user, 'view')
 
-        secrets_table = SecretTable(secrets)
-        secrets_table.columns.hide('role')
-        paginate_table(secrets_table, request)
+        secrets_group_table = SecretsGroupTable(secrets_group)
+        paginate_table(secrets_group_table, request)
 
         return {
-            'secrets_table': secrets_table,
+            'secrets_group_table': secrets_group_table,
         }
 
 
@@ -113,18 +108,14 @@ class SecretRoleBulkImportView(generic.BulkImportView):
 
 
 class SecretRoleBulkEditView(generic.BulkEditView):
-    queryset = SecretRole.objects.annotate(
-        secret_count=count_related(Secret, 'role')
-    )
+    queryset = SecretRole.objects.all()
     filterset = SecretRoleFilterSet
     table = SecretRoleTable
     form = SecretRoleBulkEditForm
 
 
 class SecretRoleBulkDeleteView(generic.BulkDeleteView):
-    queryset = SecretRole.objects.annotate(
-        secret_count=count_related(Secret, 'role')
-    )
+    queryset = SecretRole.objects.all()
     table = SecretRoleTable
 
 
@@ -265,14 +256,14 @@ class SecretBulkImportView(generic.BulkImportView):
 
 
 class SecretBulkEditView(generic.BulkEditView):
-    queryset = Secret.objects.prefetch_related('role')
+    queryset = Secret.objects.all()
     filterset = SecretFilterSet
     table = SecretTable
     form = SecretBulkEditForm
 
 
 class SecretBulkDeleteView(generic.BulkDeleteView):
-    queryset = Secret.objects.prefetch_related('role')
+    queryset = Secret.objects.all()
     filterset = SecretFilterSet
     table = SecretTable
 
