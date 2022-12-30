@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.routers import APIRootView
 from rest_framework.viewsets import ViewSet
+from rest_framework.parsers import JSONParser, FormParser
 
 from extras.api.views import CustomFieldViewSet
 from netbox.api.viewsets import ModelViewSet
@@ -143,6 +144,9 @@ class GetSessionKeyViewSet(ViewSet):
     key will be returned instead of a new one.
     """
     permission_classes = [IsAuthenticated]
+
+    # Override Netbox DEFAULT_PARSER_CLASSES
+    parser_classes = [JSONParser, FormParser]
 
     @swagger_auto_schema(
         manual_parameters=[
