@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 
 from dcim.models import Device
 from netbox.forms import NetBoxModelForm
-from extras.forms import CustomFieldCSVForm, CustomFieldFilterForm, CustomFieldBulkEditForm, CustomFieldForm, TagForm
+from extras.forms import CustomFieldImportForm, CustomFieldFilterForm, CustomFieldBulkEditForm, CustomFieldForm, TagForm
 from extras.models import Tag
 from utilities.forms import (
     CSVModelChoiceField, SlugField, TagFilterField, DynamicModelChoiceField,
@@ -52,7 +52,7 @@ class SecretRoleForm(NetBoxModelForm):
         fields = ('name', 'slug', 'description')
 
 
-class SecretRoleCSVForm(CustomFieldCSVForm):
+class SecretRoleCSVForm(CustomFieldImportForm):
     slug = SlugField()
 
     class Meta:
@@ -166,7 +166,7 @@ class SecretForm(NetBoxModelForm):
         return super().save(*args, **kwargs)
 
 
-class SecretCSVForm(CustomFieldCSVForm):
+class SecretCSVForm(CustomFieldImportForm):
     role = CSVModelChoiceField(
         queryset=SecretRole.objects.all(),
         to_field_name='name',
