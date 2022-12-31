@@ -1,10 +1,8 @@
 from extras.plugins import PluginConfig
 
+from importlib.metadata import metadata
 
-try:
-    from importlib.metadata import metadata
-except ModuleNotFoundError:
-    from importlib_metadata import metadata
+
 
 metadata = metadata('netbox_secretstore')
 
@@ -18,7 +16,7 @@ class NetBoxSecretStore(PluginConfig):
     author_email = metadata.get('Author-email')
     base_url = 'netbox_secretstore'
     min_version = '3.3.0beta1'
-    max_version = '3.3.9'
+    max_version = '3.4.99'
     required_settings = []
     default_settings = {
         'public_key_size': 2048
