@@ -72,7 +72,7 @@ class SecretRoleDeleteView(ObjectDeleteView):
 
 class SecretRoleBulkImportView(BulkImportView):
     queryset = SecretRole.objects.all()
-    form = SecretRoleCSVForm
+    model_form = SecretRoleCSVForm
     table = SecretRoleTable
 
 
@@ -183,7 +183,7 @@ class SecretDeleteView(ObjectDeleteView):
 
 class SecretBulkImportView(BulkImportView):
     queryset = Secret.objects.all()
-    form = SecretCSVForm
+    model_form = SecretCSVForm
     table = SecretTable
     template_name = 'netbox_secretstore/secret_import.html'
     widget_attrs = {'class': 'requires-session-key'}
