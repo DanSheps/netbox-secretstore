@@ -1,3 +1,8 @@
+# Discontinuation of plugin
+
+This mod will be discontinued in favour of https://github.com/Onemind-Services-LLC/netbox-secrets
+
+
 Netbox Secret Store
 ---
 
