@@ -156,15 +156,15 @@ class SecretEditView(ObjectEditView):
                     secret.plaintext = str(form.cleaned_data['plaintext'])
                     secret.encrypt(master_key)
 
-            secret.save()
-            form.save_m2m()
+                    secret.save()
+                    form.save_m2m()
 
-            msg = '{} secret'.format('Created' if not form.instance.pk else 'Modified')
-            logger.info(f"{msg} {secret} (PK: {secret.pk})")
-            msg = f'{msg} <a href="{secret.get_absolute_url()}">{escape(secret)}</a>'
-            messages.success(request, mark_safe(msg))
+                    msg = '{} secret'.format('Created' if not form.instance.pk else 'Modified')
+                    logger.info(f"{msg} {secret} (PK: {secret.pk})")
+                    msg = f'{msg} <a href="{secret.get_absolute_url()}">{escape(secret)}</a>'
+                    messages.success(request, mark_safe(msg))
 
-            return redirect(self.get_return_url(request, secret))
+                    return redirect(self.get_return_url(request, secret))
 
         else:
             logger.debug("Form validation failed")
