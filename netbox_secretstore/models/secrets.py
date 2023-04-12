@@ -21,6 +21,7 @@ from netbox_secretstore.exceptions import InvalidKey
 from netbox_secretstore.hashers import SecretValidationHasher
 from netbox_secretstore.querysets import UserKeyQuerySet
 from netbox_secretstore.utils import encrypt_master_key, decrypt_master_key, generate_random_key
+from taggit.managers import TaggableManager
 
 
 __all__ = (
@@ -47,7 +48,7 @@ class UserKey(models.Model):
     user = models.OneToOneField(
         to=User,
         on_delete=models.CASCADE,
-        related_name='user_key',
+        related_name='user_key_secretstore',
         editable=False
     )
     public_key = models.TextField(
@@ -256,6 +257,11 @@ class SecretRole(OrganizationalModel):
         blank=True,
     )
 
+    tags = TaggableManager(
+        through='extras.TaggedItem',
+        related_name='netbox_secretstore_secretroles'
+    )
+
     objects = RestrictedQuerySet.as_manager()
 
     csv_headers = ['name', 'slug', 'description']
@@ -312,6 +318,11 @@ class Secret(NetBoxModel):
     hash = models.CharField(
         max_length=128,
         editable=False
+    )
+
+    tags = TaggableManager(
+        through='extras.TaggedItem',
+        related_name='netbox_secretstore_secret'
     )
 
     objects = RestrictedQuerySet.as_manager()
